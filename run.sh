@@ -39,7 +39,7 @@ done
 # no args
 if [ -z "$number" ] && [ "$OPTIND" -eq 1 ]; then
     # find most recent file within all these directories
-    recent_file=$(find . -type f ! -name "run.sh" -print0 | xargs -0 stat --format="%Y %n" | sort -nr | head -n 1 | cut -d' ' -f2-)
+    recent_file=$(find . -type f ! -name "run.sh" ! -name "README.md" ! -path "./.git/*" -print0 | xargs -0 stat --format="%Y %n" | sort -nr | head -n 1 | cut -d' ' -f2-)
     
     if [ -n "$recent_file" ]; then
         execute "$recent_file"
@@ -64,7 +64,7 @@ fi
 
 file="./${year}/${number}"
 
-matched_file=$(find "$file."* -type f)
+matched_file=$(find "$file."* -type f ! -name "README.md" ! -path "./.git/*")
 
 if [ -n "$matched_file" ]; then
     execute "$matched_file"
