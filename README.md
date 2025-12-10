@@ -8,7 +8,9 @@ Just place \[day] file with the code inside the respective \[year] directory.
 
 ## Running
 
-**Supported languages (for now):** `TypeScript, JavaScript`
+**Supported languages (for now):**
+
+- `TypeScript, JavaScript` (requires `bun` runtime)
 
 Most recent edited file:
 
