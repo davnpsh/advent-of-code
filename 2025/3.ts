@@ -5,7 +5,8 @@ const BATTERY_BANKS: string[] = input
   .split("\n")
   .map((line: string) => line.trim().replace(/\n$/, ""))
   .filter((line: string) => line.trim() !== "");
-let total_max_joltage: number = 0;
+let total_max_joltage_first_half: number = 0;
+let total_max_joltage_second_half: number = 0;
 
 function k_max(k: number, arr: number[]) {
   let stack: number[] = [];
@@ -36,11 +37,13 @@ function turn_on(k: number, battery_bank: string): number {
 
   const batteries = k_max(k, arr);
 
-  return parseInt(batteries.join(''));
+  return parseInt(batteries.join(""));
 }
 
 for (const [index, battery_bank] of BATTERY_BANKS.entries()) {
-  total_max_joltage += turn_on(2, battery_bank);
+  total_max_joltage_first_half += turn_on(2, battery_bank);
+  total_max_joltage_second_half += turn_on(12, battery_bank);
 }
 
-console.log("Total output joltage:", total_max_joltage);
+console.log("Total output joltage first half:", total_max_joltage_first_half);
+console.log("Total output joltage second half:", total_max_joltage_second_half);
