@@ -66,5 +66,29 @@ for (let i: number = 0; i < ROWS; i++) {
   }
 }
 
+// second-half
+while (removable_stack.length > 0) {
+  let removable = removable_stack.shift();
+
+  let i: number = removable!.x,
+    j: number = removable!.y;
+
+  if (GRID[i][j] === ".") continue;
+
+  GRID[i][j] = ".";
+  accessible_second_half++;
+
+  // update neighbors
+  let neighbors_locations = get_neighbors_locations(i, j);
+
+  for (const { x, y } of neighbors_locations) {
+    neighbors_grid[x][y]--;
+
+    if (GRID[x][y] === "@" && neighbors_grid[x][y] === 3) {
+      removable_stack.push({ x, y });
+    }
+  }
+}
+
 console.log("Accessible by forklifts first half:", accessible_first_half);
 console.log("Accessible by forklifts second half:", accessible_second_half);
