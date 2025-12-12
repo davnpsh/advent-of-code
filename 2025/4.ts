@@ -5,75 +5,65 @@ const GRID: string[][] = input
   .split("\n")
   .map((line: string) => line.trim().replace(/\n$/, "").split(""))
   .filter((row: string) => row.length !== 0);
-
+const ROWS: number = GRID.length,
+  COLS: number = GRID[0].length;
 // prettier-ignore
 const directions: number[][] = [
   [-1, -1], [-1, 0], [-1, 1],
   [0, -1],           [0, 1],
   [1, -1],  [1, 0],  [1, 1]
 ];
-
 let accessible_first_half: number = 0;
 let accessible_second_half: number = 0;
 
-function get_neighbors(i: number, j: number): string[] {
-  let neighbors: string[] = [];
+// pre-computing neighbors
+let neighbors_grid: number[][] = Array.from({ length: ROWS }, () =>
+  Array(COLS).fill(0),
+);
 
-  for (const [x, y] of directions) {
-    if (i + x >= 0 && i + x < GRID.length) {
-      if (j + y >= 0 && j + y < GRID[i].length) {
-        neighbors.push(GRID[i + x][j + y]);
-      }
+type coord = {
+  x: number;
+  y: number;
+};
+
+function get_neighbors_locations(i: number, j: number): coord[] {
+  let neighbors: coord[] = [];
+
+  for (const [dx, dy] of directions) {
+    let x: number = i + dx,
+      y: number = j + dy;
+
+    if (x >= 0 && x < ROWS && y >= 0 && y < COLS) {
+      neighbors.push({ x, y });
     }
   }
 
   return neighbors;
 }
 
-// For first half
-for (let i: number = 0; i < GRID.length; i++) {
-  for (let j: number = 0; j < GRID[i].length; j++) {
-    let space = GRID[i][j];
+for (let i: number = 0; i < ROWS; i++) {
+  for (let j: number = 0; j < COLS; j++) {
+    let neighbors_locations = get_neighbors_locations(i, j);
+    let neighbors_count = 0;
 
-    if (space === ".") continue; // empty space
-
-    let adjacents = 0;
-    let neighbors: string[] = get_neighbors(i, j);
-
-    for (const neighbor of neighbors) {
-      if (neighbor === "@") adjacents++;
+    for (const { x, y } of neighbors_locations) {
+      if (GRID[x][y] === "@") neighbors_count++;
     }
 
-    if (adjacents < 4) accessible_first_half++;
+    neighbors_grid[i][j] = neighbors_count;
   }
 }
 
-// For second half
-while (true) {
-  let removed = false;
+// first-half
+let removable_stack: coord[] = [];
 
-  for (let i: number = 0; i < GRID.length; i++) {
-    for (let j: number = 0; j < GRID[i].length; j++) {
-      let space = GRID[i][j];
-
-      if (space === ".") continue; // empty space
-
-      let adjacents = 0;
-      let neighbors: string[] = get_neighbors(i, j);
-
-      for (const neighbor of neighbors) {
-        if (neighbor === "@") adjacents++;
-      }
-
-      if (adjacents < 4) {
-        GRID[i][j] = ".";
-        removed = true;
-        accessible_second_half++;
-      }
+for (let i: number = 0; i < ROWS; i++) {
+  for (let j: number = 0; j < COLS; j++) {
+    if (GRID[i][j] !== "." && neighbors_grid[i][j] < 4) {
+      accessible_first_half++;
+      removable_stack.push({ x: i, y: j });
     }
   }
-
-  if (!removed) break;
 }
 
 console.log("Accessible by forklifts first half:", accessible_first_half);
