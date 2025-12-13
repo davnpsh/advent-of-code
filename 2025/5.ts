@@ -35,50 +35,18 @@ for (const id of IDs) {
 }
 
 // cleaning ranges
-const CLEANED_RANGES: range[] = [];
+const CLEANED_RANGES: range[] = [...RANGES].sort((a, b) => a.min - b.min);
 
-// Given the limit of a range, find if a range contains it
-// if so, return the index
-function find_range_index(lim: number): number | null {
-  for (let i = 0; i < RANGES.length; i++) {
-    if (lim >= RANGES[i].min && lim <= RANGES[i].max) {
-      return i;
-    }
-  }
+let i: number = 0;
 
-  return null;
-}
+while (i < CLEANED_RANGES.length - 1) {
+  let current = CLEANED_RANGES[i];
+  let next = CLEANED_RANGES[i + 1];
 
-while (RANGES.length > 0) {
-  let range: range = RANGES.shift()!;
-
-  // range index in which the "min" value from the current range was found
-  let min_range_index = find_range_index(range.min);
-
-  let new_min: number | null = null;
-
-  if (min_range_index !== null) {
-    new_min = RANGES[min_range_index].min;
-    RANGES.splice(min_range_index, 1);
-  } else {
-    new_min = range.min;
-  }
-
-  // range index in which the "max" value from the current range was found
-  let max_range_index = find_range_index(range.max);
-
-  let new_max: number | null = null;
-
-  if (max_range_index !== null) {
-    new_max = RANGES[max_range_index].max;
-    RANGES.splice(max_range_index, 1);
-  } else {
-    new_max = range.max;
-  }
-
-  let new_range = { min: new_min, max: new_max };
-
-  CLEANED_RANGES.push(new_range);
+  if (current.max >= next.min) {
+    if (next.max > current.max) current.max = next.max;
+    CLEANED_RANGES.splice(i + 1, 1);
+  } else i++;
 }
 
 // Count
