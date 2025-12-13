@@ -18,22 +18,6 @@ const RANGES: range[] = raw
     return { min: parseInt(vec[0]), max: parseInt(vec[1]) };
   });
 
-const IDs: number[] = raw
-  .filter((line: string) => !line.includes("-"))
-  .map((line: string) => parseInt(line));
-
-let fresh_first_half = 0;
-let fresh_second_half = 0;
-
-for (const id of IDs) {
-  for (const { min, max } of RANGES) {
-    if (id >= min && id <= max) {
-      fresh_first_half++;
-      break;
-    }
-  }
-}
-
 // cleaning ranges
 const CLEANED_RANGES: range[] = [...RANGES].sort((a, b) => a.min - b.min);
 
@@ -49,7 +33,22 @@ while (i < CLEANED_RANGES.length - 1) {
   } else i++;
 }
 
-// Count
+const IDs: number[] = raw
+  .filter((line: string) => !line.includes("-"))
+  .map((line: string) => parseInt(line));
+
+let fresh_first_half = 0;
+let fresh_second_half = 0;
+
+for (const id of IDs) {
+  for (const { min, max } of CLEANED_RANGES) {
+    if (id >= min && id <= max) {
+      fresh_first_half++;
+      break;
+    }
+  }
+}
+
 for (const { min, max } of CLEANED_RANGES) {
   fresh_second_half += max - min + 1;
 }
