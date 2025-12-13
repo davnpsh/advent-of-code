@@ -4,7 +4,7 @@ Collection of my solutions for Advent of Code challenges.
 
 ## Solving
 
-Just place \[day] file with the code inside the respective \[year] directory.
+Just place \[day] file with the code inside the respective \[year] directory. Input files should go inside \[year]/inputs/\[day].txt.
 
 ## Running
 

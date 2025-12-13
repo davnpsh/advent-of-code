@@ -5,6 +5,14 @@ current_year=$(date +'%Y')
 year=$current_year
 number=""
 
+SUPPORTED_EXTS=(ts js)
+
+ext_expr=()
+for ext in "${SUPPORTED_EXTS[@]}"; do
+    ext_expr+=(-name "*.$ext" -o)
+done
+unset 'ext_expr[-1]'   # remove trailing -o
+
 execute() {
     local file="$1"
     local extension="${file##*.}"
@@ -39,7 +47,7 @@ done
 # no args
 if [ -z "$number" ] && [ "$OPTIND" -eq 1 ]; then
     # find most recent file within all these directories
-    recent_file=$(find . -type f ! -name "run.sh" ! -name "README.md" ! -path "./.git/*" ! -path "*/inputs/*" -print0 | xargs -0 stat --format="%Y %n" | sort -nr | head -n 1 | cut -d' ' -f2-)
+    recent_file=$(find . -type f \( "${ext_expr[@]}" \) ! -path "./.git/*" ! -path "*/inputs/*" -print0 | xargs -0 stat --format="%Y %n" | sort -nr | head -n 1 | cut -d' ' -f2-)
     
     if [ -n "$recent_file" ]; then
         execute "$recent_file"
@@ -64,7 +72,7 @@ fi
 
 file="./${year}/${number}"
 
-matched_file=$(find "$file."* -type f ! -name "README.md" ! -path "./.git/*" ! -path "*/inputs/*")
+matched_file=$(find "$file."* -type f \( "${ext_expr[@]}" \) ! -path "./.git/*" ! -path "*/inputs/*")
 
 if [ -n "$matched_file" ]; then
     execute "$matched_file"
